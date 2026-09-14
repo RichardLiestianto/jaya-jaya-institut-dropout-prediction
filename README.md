@@ -2,33 +2,32 @@
 
 ## Business Understanding
 
-Jaya Jaya Institut merupakan institusi pendidikan tinggi yang telah berdiri sejak tahun 2000 dan telah menghasilkan banyak lulusan dengan reputasi yang baik. Namun, institusi menghadapi permasalahan berupa tingginya jumlah mahasiswa yang tidak menyelesaikan pendidikan atau mengalami **dropout**.
+Jaya Jaya Institut merupakan salah satu institusi pendidikan tinggi yang telah berdiri sejak tahun 2000 dan telah menghasilkan banyak lulusan dengan reputasi yang baik. Namun, institusi juga menghadapi permasalahan berupa adanya mahasiswa yang tidak menyelesaikan pendidikannya atau mengalami **dropout**.
 
-Berdasarkan dataset yang digunakan dalam proyek ini, terdapat **4.424 mahasiswa**, dengan **1.421 mahasiswa atau sekitar 32,12%** berstatus Dropout. Kondisi tersebut menunjukkan bahwa dropout merupakan permasalahan yang cukup signifikan dan perlu ditangani secara lebih proaktif.
-
-Untuk membantu Jaya Jaya Institut, proyek ini mengembangkan analisis data, dashboard monitoring, serta model machine learning yang dapat digunakan sebagai **early warning system** untuk membantu mengidentifikasi mahasiswa yang berisiko dropout.
+Tingginya jumlah mahasiswa dropout menjadi perhatian bagi institusi karena dapat memengaruhi keberhasilan proses pendidikan. Oleh karena itu, Jaya Jaya Institut membutuhkan pendekatan berbasis data yang dapat membantu memahami kondisi mahasiswa serta mendeteksi mahasiswa yang berpotensi mengalami dropout sedini mungkin agar institusi dapat memberikan bimbingan atau intervensi yang sesuai.
 
 ### Permasalahan Bisnis
 
-Permasalahan utama yang dihadapi Jaya Jaya Institut adalah tingginya jumlah mahasiswa yang mengalami dropout. Institusi membutuhkan pendekatan berbasis data untuk:
+Permasalahan utama dalam proyek ini adalah bagaimana Jaya Jaya Institut dapat memanfaatkan data mahasiswa untuk:
 
-1. Memahami karakteristik dan faktor yang berkaitan dengan mahasiswa yang mengalami dropout.
-2. Memonitor kondisi mahasiswa melalui dashboard yang mudah dipahami.
-3. Mengidentifikasi mahasiswa yang berisiko dropout lebih awal agar institusi dapat memberikan intervensi atau bimbingan yang sesuai.
+1. Memahami karakteristik mahasiswa yang berkaitan dengan kondisi dropout.
+2. Memonitor performa dan kondisi mahasiswa melalui dashboard yang mudah dipahami.
+3. Mengidentifikasi mahasiswa yang berpotensi mengalami dropout lebih awal sehingga institusi dapat memberikan intervensi yang sesuai.
 
 ### Cakupan Proyek
 
 Proyek ini mencakup beberapa tahapan utama, yaitu:
 
-* melakukan eksplorasi dan pemahaman terhadap data mahasiswa;
+* melakukan pemahaman dan eksplorasi terhadap data mahasiswa;
 * melakukan data preparation untuk kebutuhan machine learning;
-* mengembangkan dan mengevaluasi model klasifikasi untuk mendeteksi risiko dropout;
-* membuat dashboard menggunakan Metabase untuk memonitor status dan performa mahasiswa;
-* membuat prototype machine learning menggunakan Streamlit;
-* melakukan deployment prototype ke Streamlit Community Cloud;
-* menyusun kesimpulan serta rekomendasi action items berdasarkan hasil analisis.
+* mengembangkan model klasifikasi untuk memprediksi potensi **Dropout** atau **Graduate**;
+* mengevaluasi performa model machine learning;
+* membuat dashboard menggunakan Metabase untuk memonitor kondisi dan performa mahasiswa;
+* membuat prototype prediction system menggunakan Streamlit;
+* melakukan deployment prototype menggunakan Streamlit Community Cloud;
+* menyusun kesimpulan dan rekomendasi action items berdasarkan hasil analisis.
 
-Model machine learning pada proyek ini difokuskan pada klasifikasi biner, yaitu membedakan mahasiswa menjadi kategori **Dropout** dan **Not Dropout**, sehingga hasil prediksi dapat digunakan sebagai alat bantu early warning bagi institusi.
+Dalam proses machine learning, mahasiswa berstatus **Graduate** dan **Dropout** digunakan sebagai data historis untuk pelatihan model. Sementara itu, mahasiswa berstatus **Enrolled** tidak digunakan dalam proses training karena status akhirnya belum diketahui dan dapat digunakan sebagai data untuk prediksi di masa depan.
 
 ## Persiapan
 
@@ -144,96 +143,170 @@ Dashboard terdiri dari beberapa visualisasi utama:
 
    Hasil tersebut menunjukkan bahwa mahasiswa yang mengalami dropout memiliki performa akademik yang lebih rendah dibandingkan mahasiswa Enrolled maupun Graduate.
 
-### Akses Metabase
+### Menjalankan Dashboard Metabase
 
-Metabase dijalankan secara lokal menggunakan Docker.
+Dashboard dibuat menggunakan **Metabase v0.62.4.5** dan dijalankan menggunakan Docker.
 
-Akses Metabase:
+Pastikan **Docker Desktop** telah terinstal dan berjalan sebelum mengikuti tahapan berikut.
+
+#### 1. Pull image Metabase
+
+```bash
+docker pull metabase/metabase:v0.62.4.5
+```
+
+#### 2. Membuat container Metabase
+
+```bash
+docker run -d -p 3000:3000 --name metabase metabase/metabase:v0.62.4.5
+```
+
+#### 3. Hentikan container Metabase
+
+```bash
+docker stop metabase
+```
+
+#### 4. Salin database Metabase ke dalam container
+
+Pastikan file `metabase.db.mv.db` berada pada direktori tempat command dijalankan.
+
+```bash
+docker cp metabase.db.mv.db metabase:/metabase.db/metabase.db.mv.db
+```
+
+#### 5. Jalankan kembali container
+
+```bash
+docker start metabase
+```
+
+#### 6. Akses Dashboard
+
+Setelah container berjalan, buka:
 
 ```text
 http://localhost:3000
 ```
 
-Kredensial:
+Kredensial Metabase:
 
 ```text
 Email    : root@mail.com
 Password : root123
 ```
 
-File database internal Metabase yang berisi konfigurasi dashboard disertakan dalam submission dengan nama:
+Dashboard yang digunakan pada proyek ini bernama:
 
-```text
-metabase.db.mv.db
-```
+**Jaya Jaya Institut - Student Performance & Dropout Dashboard**
 
-Screenshot dashboard juga disertakan dalam folder submission dengan format:
-
-```text
-username_dicoding-dashboard.png
-```
+Dashboard menggunakan PostgreSQL pada Supabase sebagai sumber data mahasiswa sehingga koneksi internet diperlukan agar Metabase dapat mengakses sumber data.
 
 ## Modeling dan Evaluation
 
-Model machine learning dikembangkan sebagai solusi untuk membantu mengidentifikasi mahasiswa yang berisiko dropout.
+Model machine learning dikembangkan untuk membantu Jaya Jaya Institut memprediksi apakah mahasiswa yang sedang menempuh pendidikan memiliki kecenderungan menuju status **Dropout** atau **Graduate**.
+
+### Persiapan Data untuk Modeling
+
+Pada proses modeling, hanya data mahasiswa yang telah memiliki status akhir yang digunakan, yaitu:
+
+* **Graduate:** 2.209 mahasiswa
+* **Dropout:** 1.421 mahasiswa
+
+Mahasiswa dengan status **Enrolled** sebanyak 794 mahasiswa **tidak digunakan dalam proses training**, karena mahasiswa tersebut masih menjalani pendidikan sehingga status akhirnya belum diketahui.
+
+Data Enrolled dipisahkan dan dapat digunakan sebagai data untuk melakukan prediksi menggunakan model yang telah dilatih.
+
+Target kemudian diubah menjadi klasifikasi biner:
+
+* `0` = Graduate
+* `1` = Dropout
+
+Data modeling dibagi menjadi data training dan testing dengan proporsi **80:20** menggunakan stratified sampling agar proporsi kelas Graduate dan Dropout tetap terjaga.
+
+### Preprocessing
+
+Fitur dibagi menjadi fitur numerik dan kategorikal.
+
+* Fitur numerik diproses menggunakan `StandardScaler`.
+* Fitur kategorikal diproses menggunakan `OneHotEncoder`.
+
+Seluruh proses preprocessing digabungkan dengan model menggunakan `Pipeline` agar proses transformasi data pada saat training dan prediction tetap konsisten.
+
+### Model yang Digunakan
 
 Dua algoritma klasifikasi digunakan sebagai perbandingan:
 
-* **Logistic Regression**
-* **Random Forest Classifier**
+1. **Logistic Regression**
+2. **Random Forest Classifier**
 
-Kedua model menggunakan preprocessing pipeline yang sama. Fitur numerik diproses menggunakan `StandardScaler`, sedangkan fitur kategorikal diproses menggunakan `OneHotEncoder`.
+Kedua model dilatih menggunakan data yang sama dan dievaluasi menggunakan Accuracy, Precision, Recall, F1-Score, dan ROC-AUC.
 
-Data dibagi menjadi data training dan testing dengan proporsi **80:20** menggunakan stratified sampling agar distribusi target tetap terjaga.
-
-### Hasil Evaluasi Model
+### Hasil Evaluasi
 
 | Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 | ------------------- | -------: | --------: | -----: | -------: | ------: |
-| Logistic Regression |    0.889 |     0.878 |  0.761 |    0.815 |   0.932 |
-| Random Forest       |    0.882 |     0.902 |  0.711 |    0.795 |   0.925 |
+| Logistic Regression |    93,4% |     91,0% |  92,3% |    91,6% |   97,6% |
+| Random Forest       |    93,0% |     94,0% |  87,7% |    90,7% |   97,3% |
 
-Berdasarkan hasil evaluasi, **Logistic Regression dipilih sebagai model final** karena memberikan performa yang lebih seimbang, terutama pada Recall dan F1-Score.
+Berdasarkan hasil evaluasi, **Logistic Regression** memberikan performa terbaik secara keseluruhan. Model menghasilkan Accuracy sebesar **93,4%**, Recall sebesar **92,3%**, F1-Score sebesar **91,6%**, dan ROC-AUC sebesar **97,6%**.
 
-Recall sebesar **76,1%** menunjukkan bahwa model mampu mendeteksi sekitar tiga dari empat mahasiswa yang benar-benar mengalami dropout pada data testing.
+Random Forest memiliki Precision yang lebih tinggi, yaitu **94,0%**, tetapi Logistic Regression memiliki Recall dan F1-Score yang lebih tinggi pada kelas Dropout.
 
-Dari **284 mahasiswa Dropout** pada data testing, model berhasil mendeteksi sekitar **216 mahasiswa**, sedangkan sekitar **68 mahasiswa Dropout** belum berhasil terdeteksi.
+Dalam konteks proyek ini, Recall menjadi metrik yang penting karena menunjukkan kemampuan model dalam mendeteksi mahasiswa yang benar-benar termasuk dalam kelas **Dropout**. Recall yang lebih tinggi dapat membantu mengurangi jumlah mahasiswa berisiko dropout yang tidak terdeteksi oleh sistem.
 
-Model final kemudian disimpan dalam bentuk pipeline pada:
+Oleh karena itu, **Logistic Regression dipilih sebagai model final** untuk memprediksi apakah mahasiswa memiliki kecenderungan menuju status Dropout atau Graduate.
+
+Model final beserta preprocessing pipeline disimpan pada:
 
 ```text
 model/dropout_prediction_model.joblib
 ```
 
-Pipeline tersebut digunakan langsung oleh aplikasi Streamlit sehingga proses preprocessing dan prediksi tetap konsisten dengan proses training.
+Model tersebut kemudian digunakan pada prototype Streamlit untuk melakukan prediksi terhadap mahasiswa yang status akhirnya belum diketahui, seperti mahasiswa yang masih berstatus **Enrolled**.
 
 ## Conclusion
 
-Berdasarkan hasil analisis, dropout merupakan permasalahan yang cukup signifikan di Jaya Jaya Institut. Dari total **4.424 mahasiswa**, sebanyak **1.421 mahasiswa atau 32,12%** mengalami dropout.
+Berdasarkan hasil analisis terhadap data mahasiswa Jaya Jaya Institut, terdapat **4.424 mahasiswa** yang terdiri dari **2.209 Graduate**, **1.421 Dropout**, dan **794 Enrolled**. Mahasiswa dengan status Dropout mencakup sekitar **32,12%** dari keseluruhan data, sehingga permasalahan dropout menjadi hal yang penting untuk dimonitor oleh institusi.
 
-Hasil dashboard menunjukkan bahwa faktor finansial dan performa akademik memiliki pola yang kuat terhadap status mahasiswa. Mahasiswa dengan status pembayaran biaya kuliah **Not Up to Date** memiliki dropout rate sebesar **86,55%**, jauh lebih tinggi dibandingkan mahasiswa dengan pembayaran **Up to Date** sebesar **24,74%**.
+Hasil analisis dashboard menunjukkan adanya beberapa karakteristik yang berkaitan dengan kondisi dropout.
 
-Perbedaan juga terlihat pada performa akademik. Mahasiswa Dropout rata-rata hanya berhasil menyelesaikan **2,55 unit kurikuler pada semester pertama** dan **1,94 unit pada semester kedua**, sedangkan mahasiswa Graduate masing-masing berhasil menyelesaikan rata-rata **6,23** dan **6,18 unit**.
+Dari sisi finansial, mahasiswa dengan status pembayaran biaya kuliah **Not Up to Date** memiliki dropout rate sebesar **86,55%**, jauh lebih tinggi dibandingkan mahasiswa dengan pembayaran **Up to Date** yang memiliki dropout rate sebesar **24,74%**. Hal ini menunjukkan bahwa kondisi pembayaran biaya kuliah merupakan salah satu faktor penting yang perlu diperhatikan dalam proses monitoring mahasiswa.
 
-Solusi machine learning menggunakan **Logistic Regression** menghasilkan Accuracy sebesar **88,9%**, Recall sebesar **76,1%**, F1-Score sebesar **81,5%**, dan ROC-AUC sebesar **93,2%**. Model tersebut dapat digunakan sebagai alat bantu early warning untuk membantu institusi mengidentifikasi mahasiswa yang berisiko dropout lebih awal.
+Dari sisi akademik, mahasiswa Dropout memiliki rata-rata jumlah unit kurikuler yang berhasil diselesaikan sebesar **2,55 pada semester pertama** dan **1,94 pada semester kedua**. Nilai tersebut lebih rendah dibandingkan mahasiswa Graduate yang rata-rata berhasil menyelesaikan **6,23 unit pada semester pertama** dan **6,18 unit pada semester kedua**. Temuan ini menunjukkan bahwa performa akademik pada semester awal dapat menjadi indikator penting untuk mendeteksi risiko dropout.
 
-Dengan menggabungkan dashboard monitoring dan sistem prediksi, Jaya Jaya Institut dapat melakukan pemantauan mahasiswa secara lebih terstruktur dan memberikan intervensi yang lebih cepat terhadap mahasiswa yang membutuhkan perhatian.
+Pada proses machine learning, hanya mahasiswa dengan status akhir **Graduate** dan **Dropout** yang digunakan sebagai data training. Mahasiswa berstatus **Enrolled** tidak dilibatkan dalam training karena status akhirnya belum diketahui dan dapat digunakan sebagai data untuk prediction di masa depan.
+
+Dari dua model yang diuji, **Logistic Regression** dipilih sebagai model final dengan performa:
+
+* Accuracy: **93,4%**
+* Precision: **91,0%**
+* Recall: **92,3%**
+* F1-Score: **91,6%**
+* ROC-AUC: **97,6%**
+
+Recall sebesar **92,3%** menunjukkan bahwa model memiliki kemampuan yang baik dalam mendeteksi mahasiswa yang benar-benar termasuk dalam kelas Dropout.
+
+Dengan menggabungkan **dashboard monitoring** dan **prototype machine learning**, Jaya Jaya Institut dapat melakukan monitoring kondisi mahasiswa secara lebih terstruktur serta menggunakan model sebagai **early warning system** untuk membantu mengidentifikasi mahasiswa yang berpotensi mengalami dropout lebih awal.
 
 ## Rekomendasi Action Items
 
-Berdasarkan hasil analisis dan modeling, beberapa action items yang dapat dilakukan oleh Jaya Jaya Institut adalah:
+Berdasarkan hasil analisis dan modeling, beberapa action items yang dapat diterapkan oleh Jaya Jaya Institut adalah:
 
-1. **Memprioritaskan mahasiswa dengan kendala pembayaran biaya kuliah.**
-   Mahasiswa dengan status pembayaran biaya kuliah yang tidak up to date memiliki dropout rate sebesar **86,55%**. Institusi dapat melakukan monitoring pembayaran lebih dini serta menawarkan konsultasi, skema pembayaran, atau dukungan finansial kepada mahasiswa yang mengalami kendala.
+1. **Memprioritaskan monitoring mahasiswa yang memiliki kendala pembayaran biaya kuliah.**
+   Mahasiswa dengan status pembayaran **Not Up to Date** memiliki dropout rate sebesar **86,55%**. Institusi dapat melakukan monitoring pembayaran secara berkala serta menyediakan konsultasi, skema pembayaran, atau dukungan finansial bagi mahasiswa yang mengalami kesulitan.
 
 2. **Melakukan monitoring performa akademik sejak semester awal.**
-   Mahasiswa yang mengalami dropout memiliki rata-rata jumlah unit kurikuler yang berhasil diselesaikan jauh lebih rendah dibandingkan mahasiswa Graduate. Institusi dapat menetapkan indikator early warning berdasarkan jumlah mata kuliah yang berhasil diselesaikan dan nilai akademik pada semester pertama maupun kedua.
+   Mahasiswa Dropout memiliki jumlah unit kurikuler yang berhasil diselesaikan lebih rendah dibandingkan mahasiswa Graduate. Institusi dapat menggunakan jumlah mata kuliah yang berhasil diselesaikan dan nilai akademik semester awal sebagai indikator untuk menentukan mahasiswa yang membutuhkan perhatian lebih lanjut.
 
-3. **Memberikan pendampingan akademik kepada mahasiswa berisiko.**
-   Mahasiswa dengan performa akademik rendah dapat diarahkan untuk mendapatkan bimbingan akademik, tutoring, konseling, atau evaluasi beban studi sebelum kondisi tersebut berkembang menjadi risiko dropout yang lebih tinggi.
+3. **Memberikan intervensi akademik kepada mahasiswa berisiko.**
+   Mahasiswa dengan performa akademik rendah dapat diberikan program pendampingan seperti bimbingan akademik, tutoring, konseling, atau evaluasi beban studi untuk membantu meningkatkan peluang mahasiswa menyelesaikan pendidikan.
 
-4. **Menggunakan model machine learning sebagai early warning system.**
-   Prototype yang telah dikembangkan dapat digunakan untuk membantu mengidentifikasi mahasiswa dengan probabilitas dropout yang tinggi. Hasil prediksi sebaiknya digunakan sebagai pendukung proses monitoring, bukan sebagai satu-satunya dasar pengambilan keputusan.
+4. **Menggunakan model Logistic Regression sebagai early warning system.**
+   Model dapat diterapkan pada mahasiswa yang masih berstatus **Enrolled** untuk memperkirakan kecenderungan menuju **Dropout** atau **Graduate**. Mahasiswa dengan probabilitas dropout yang tinggi dapat diprioritaskan untuk proses monitoring dan intervensi lebih lanjut.
 
-5. **Melakukan evaluasi berkala terhadap dashboard dan model.**
-   Data mahasiswa baru perlu ditambahkan secara berkala sehingga dashboard tetap mencerminkan kondisi terkini. Model machine learning juga perlu dievaluasi dan diperbarui secara periodik agar performanya tetap relevan terhadap karakteristik mahasiswa terbaru.
+5. **Menggabungkan hasil prediksi dengan evaluasi dari pihak institusi.**
+   Hasil prediksi machine learning sebaiknya digunakan sebagai alat bantu dan tidak dijadikan satu-satunya dasar pengambilan keputusan. Pihak akademik tetap perlu mempertimbangkan kondisi individual mahasiswa sebelum menentukan bentuk intervensi.
+
+6. **Melakukan evaluasi dan pembaruan model secara berkala.**
+   Model sebaiknya dievaluasi kembali ketika tersedia data mahasiswa baru yang telah memiliki status akhir Graduate atau Dropout. Dengan demikian, model dapat terus menyesuaikan diri dengan karakteristik mahasiswa terbaru dan mempertahankan performa prediksi yang baik.
