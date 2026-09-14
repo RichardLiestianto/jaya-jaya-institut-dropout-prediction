@@ -21,7 +21,8 @@ st.title("🎓 Student Dropout Prediction")
 st.write(
     """
     Prototype ini digunakan untuk membantu **Jaya Jaya Institut**
-    dalam mengidentifikasi mahasiswa yang memiliki risiko dropout
+    dalam memprediksi apakah mahasiswa yang sedang menempuh pendidikan
+    memiliki kecenderungan menuju status **Dropout** atau **Graduate**
     berdasarkan karakteristik mahasiswa dan performa akademiknya.
     """
 )
@@ -193,7 +194,7 @@ if predict_button:
         prediction_label = (
             "Dropout"
             if prediction == 1
-            else "Not Dropout"
+            else "Graduate"
         )
 
         st.metric(
@@ -201,14 +202,14 @@ if predict_button:
             prediction_label
         )
 
-    if prediction == 1:
-        st.error(
-            "⚠️ Mahasiswa terindikasi memiliki risiko dropout. "
+        if prediction == 1:
+            st.error(
+            "⚠️ Mahasiswa diprediksi memiliki potensi Dropout. "
             "Disarankan untuk dilakukan pemantauan dan intervensi lebih lanjut."
         )
-    else:
-        st.success(
-            "✅ Mahasiswa diprediksi tidak termasuk dalam kelompok dropout."
+        else:
+            st.success(
+            "✅ Mahasiswa diprediksi memiliki potensi untuk Graduate."
         )
 
     st.caption(
