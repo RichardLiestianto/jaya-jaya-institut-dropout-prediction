@@ -27,11 +27,20 @@ Proyek ini mencakup beberapa tahapan utama, yaitu:
 * melakukan deployment prototype menggunakan Streamlit Community Cloud;
 * menyusun kesimpulan dan rekomendasi action items berdasarkan hasil analisis.
 
-Dalam proses machine learning, mahasiswa berstatus **Graduate** dan **Dropout** digunakan sebagai data historis untuk pelatihan model. Sementara itu, mahasiswa berstatus **Enrolled** tidak digunakan dalam proses training karena status akhirnya belum diketahui dan dapat digunakan sebagai data untuk prediksi di masa depan.
+Untuk kebutuhan machine learning, hanya mahasiswa dengan status akhir **Graduate** dan **Dropout** yang digunakan dalam proses training. Target diubah menjadi klasifikasi biner:
+
+* `0` = Graduate
+* `1` = Dropout
+
+Mahasiswa berstatus **Enrolled** tidak digunakan dalam proses training karena status akhirnya belum diketahui. Data tersebut dipisahkan untuk digunakan sebagai data prediksi di masa depan.
 
 ## Persiapan
 
 ### Sumber Data
+
+Dataset dapat diakses melalui tautan berikut:
+
+https://github.com/dicodingacademy/dicoding_dataset/blob/main/students_performance/data.csv
 
 Dataset yang digunakan adalah **Students' Performance** yang disediakan oleh Dicoding. Dataset terdiri dari **4.424 observasi dan 37 kolom**, yang mencakup informasi demografis, latar belakang pendidikan, kondisi finansial, performa akademik semester pertama dan kedua, kondisi ekonomi, serta status mahasiswa.
 
@@ -44,7 +53,7 @@ Variabel `Status` memiliki tiga kategori:
 Untuk kebutuhan machine learning, target diubah menjadi klasifikasi biner:
 
 * `1` = Dropout
-* `0` = Not Dropout
+* `0` = Graduate
 
 ### Setup Environment
 
@@ -88,7 +97,7 @@ https://jaya-jaya-institut-dropout-prediction-test.streamlit.app/
 
 Prototype menerima informasi mahasiswa sebagai input dan menghasilkan:
 
-* prediksi **Dropout** atau **Not Dropout**;
+* prediksi **Dropout** atau **Graduate**;
 * probabilitas risiko dropout;
 * informasi early warning sebagai pendukung tindak lanjut dari pihak institusi.
 
